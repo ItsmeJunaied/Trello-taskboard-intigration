@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .task-details {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="task-details">
+            <label for="taskName">Task Name:</label>
+            <input type="text" id="taskName" placeholder="Enter task name">
+            <span id="card-id"></span>
+        </div>
+        <button id="startButton">Start Task</button>
+    </div>
+
+    <script>
+        window.addEventListener('load', function () {
+            const urlHash = window.location.hash.substring(1);  
+            const urlParams = JSON.parse(decodeURIComponent(urlHash));  
+            
+            const cardId = urlParams.context.card;  
+            const taskName = urlParams.context.name; 
+            
+            if (cardId) {
+                document.getElementById("taskName").value = taskName;
+                document.getElementById('card-id').textContent = 'Card ID: ' + cardId;  // Display the card ID in the popup
+            } else {
+                console.error('Card ID is missing from hash');
+            }
+            
+            
+
+        });
+        
+        document.getElementById("startButton").addEventListener("click", function() {
+            console.log('startButton hit')
+            const urlHash = window.location.hash.substring(1);  
+            const urlParams = JSON.parse(decodeURIComponent(urlHash));  
+            
+            const cardId = urlParams.context.card;  
+            
+             // Send the task details to your server
+            fetch(`https://api.trello.com/1/cards/${cardId}?fields=all&key=9e820778fbf1e4ac7731bd5f52c1250b&token=ATTAa9c80729de3f4090e568435c99c2c149f75a783f91f25375aaf1c4b0551d2eb85A670B26`, {
+                  method: "GET", // Using GET method as the API retrieves card details
+                  headers: {
+                    "Content-Type": "application/json" // Optional, but good practice to set content type
+                  }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                      throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json(); // Parse the response as JSON
+              })
+              .then(data => {
+                console.log(data); // Handle the response data
+              })
+              .catch(error => {
+                console.error("Error fetching Trello card:", error); // Handle any errors
+              });
+        
+        });
+    </script>
+</body>
+</html>
