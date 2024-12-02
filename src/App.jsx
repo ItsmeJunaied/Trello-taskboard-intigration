@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import "./App.css";
+import { useSearchParams } from "react-router";
 
 function App() {
   const [isRunning, setIsRunning] = useState(false);
@@ -10,7 +11,8 @@ function App() {
   const [projectId] = useState(25);
   const [intervalId, setIntervalId] = useState(null);
   const [trackingStarted, setTrackingStarted] = useState(false);
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  searchParams.get("__firebase_request_key")
   // Utility to convert HH:MM:SS string to seconds
   const parseDurationToSeconds = (duration) => {
     const [hours, minutes, seconds] = duration.split(":").map(Number);
@@ -40,7 +42,9 @@ function App() {
         console.error("No token found in localStorage");
         return;
       }
-
+      const searchParams = new URLSearchParams(location.search);
+      const cardId = searchParams.get("cardId");
+      console.log(cardId);
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/track/start`,
         { project_id: projectId },
@@ -84,7 +88,7 @@ function App() {
         console.error("No token found in localStorage");
         return;
       }
-
+console.log(searchParams)
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/track/pause`,
         { project_id: projectId },
@@ -153,7 +157,7 @@ function App() {
       TrelloPowerUp.initialize({
         "card-back-section": (t, options) => {
           return t.card("all").then((all) => {
-            console.log("Card ID:", all.id);
+        
 
             const popupUrl = `${t.signUrl("../popup.html")}?cardId=${
               all.id

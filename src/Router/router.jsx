@@ -1,13 +1,17 @@
-
 import { createBrowserRouter } from "react-router";
 import App from "../App";
 import LoginPage from "../pages/LoginPage";
+import PrivateRoute from "./PrivateRoute";
 
 const router = createBrowserRouter([
   // Home
   {
     path: "/",
-    element: <App />, // Main layout or App component
+    element: (
+      <PrivateRoute>
+        <App />
+      </PrivateRoute>
+    ),
   },
 
   // Authentication routes
